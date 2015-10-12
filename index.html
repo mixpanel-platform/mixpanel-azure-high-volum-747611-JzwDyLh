@@ -6,7 +6,6 @@
     <script src="https://cdn.mxpnl.com/libs/mixpanel-platform/build/mixpanel-platform.v0.latest.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js" charset="utf-8"></script>
     <style>
-    <style>
      #run {
         margin-top:5px;
         float:left;
@@ -29,7 +28,7 @@
         fill: #fff;
         stroke: steelblue;
         stroke-width: 1.5px;
-      }
+      }se
 
       .node {
         font: 10px sans-serif;
@@ -54,11 +53,8 @@
       /* Global Event List */
       var rootEvent;
       var objs = {};
-      var ids = new Set();
       var graphData = {}
-      function randomNum() {
-          return _.random(0, 10000000);
-      }
+     
   
       var width = 960;
       var height = 750;
@@ -205,14 +201,12 @@
                   Build a node object with the conversion percentage and other meta data and add it to the children
                   of the parent node
                */
-                var rando = randomNum();
                 var conversion = Math.floor(nodes[key] / node.count * 100);
                 var root = Math.floor(nodes[key] / graphData.count * 100);
                 if (conversion < 2 ) { return };
                 if (node.children) {
                     node.children.push({
                       'name':key,
-                      'id':rando,
                       'root': root,
                       'conversion': conversion,
                       'count':nodes[key]
@@ -220,7 +214,6 @@
                 } else {
                     node.children = [{
                       'name':key,
-                      'id':rando,
                       'root': root,
                       'conversion': conversion,
                       'count':nodes[key]
