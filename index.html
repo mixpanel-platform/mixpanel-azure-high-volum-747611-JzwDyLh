@@ -49,7 +49,7 @@
       <div style="clear: both;"></div>
       <button id="run" value="Run">Run</button>
     <script>
-      $('#dateSelect').MPDatepicker();
+      var dates = $('#dateSelect').MPDatepicker();
       var rootEventSelect = $('#eventSelect').MPEventSelect();
       /* Global Event List */
       var rootEvent;
@@ -231,7 +231,7 @@
           });
       }
       $('#run').on('click', function(e){
-        var rootEvent = $('#eventSelect').MPEventSelect('value');
+        var rootEvent = rootEventSelect.MPEventSelect('value');
         var dates = $('#dateSelect').MPSelect('value')
         
         params.from = dates.from;
@@ -251,15 +251,14 @@
           to: params.to,
           type: 'unique',
           interval: 32,
-          where: '(string(properties["$current_url"]) == "' + stripParams(rootProp) + '")'
-      };
+        };
       /* Find the Root Event Count */
-      var rootEventCount = MP.api.segment(rootEvent,rootParams);
-      
-      $.when(rootEventCount).done(function(eventCount){
-          graphData.count = eventCount.sum().values()[rootEvent];
-          addNode(graphData);
-      });
+        var rootEventCount = MP.api.segment(rootEvent,rootParams);
+        
+        $.when(rootEventCount).done(function(eventCount){
+            graphData.count = eventCount.sum().values()[rootEvent];
+            addNode(graphData);
+        });
       /*
       rootEventSelect.on('change', function(rootEventObj){
         rootEvent = rootEventSelect.MPEventSelect('value');
@@ -284,16 +283,16 @@
   
         */
         
-        /* Top Event Queries   */
+        /* Top Event Queries  
         var topEventsParams = {'limit':'30'};
         var topEvents = MP.api.topEvents(topEventsParams);
   
-        /* Funnel Queries */
+         Funnel Queries
         $.when(topEvents).done(function(events){
-            /* Cache top events */
+             Cache top events 
             objs = events.values();
         });
-  
+        */
       });
     </script>
   </body>
