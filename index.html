@@ -169,67 +169,43 @@
           events.push(params);
           promises.push(MP.api.funnel.apply(MP.api, events));
         });
-        /*
-          _.each(_.keys(event_list), function(key) {
-              var event = event_list[key];
-              var parent;
-              var events = [];
-              if (event != node.name) {
-                  Build a list of promises
-                  events.push(event);
-                  events.push(node.name);
-                  if (node.id != graphData.id){  // If this isn't our root event
-                    parent = node.parent;
-                    while (parent.id !=  graphData.id){
-                        events.push(parent.name);
-                        parent = parent.parent;
-                    }
-                    events.push(rootEvent);
-                    events.reverse();
-                    promises.push(MP.api.funnel.apply(MP.api, events));
-                  } else {
-                    promises.push(MP.api.funnel(node.name, event));
-                  }
-              }
+        Promise.all(promises).then(function(promiseArray){
+          _.each(promiseArray, function(data){
+            total = 0;
+            var length = data.length - 1;
+            _.each(_.values(data[length]), function(funnelObj){ total += funnelObj.count });
+            nodes[_.values(data[length])[0].event] = total;
           });
-          */
-          Promise.all(promises).then(function(promiseArray){
-            _.each(promiseArray, function(data){
-                total = 0;
-                var length = data.length - 1;
-                _.each(_.values(data[length]), function(funnelObj){ total += funnelObj.count });
-                nodes[_.values(data[length])[0].event] = total;
-            });
-          }).then(function(){
-             /* Add Data to Graph Data */
-             var total = _.values(nodes).reduce(function(a , b){return a + b;});
-  
-             _.each(_.keys(nodes), function(key){
-               /*
-                  Build a node object with the conversion percentage and other meta data and add it to the children
-                  of the parent node
-               */
-                var conversion = Math.floor(nodes[key] / node.count * 100);
-                var root = Math.floor(nodes[key] / graphData.count * 100);
-                if (conversion < 2 ) { return };
-                if (node.children) {
-                    node.children.push({
-                      'name':key,
-                      'root': root,
-                      'conversion': conversion,
-                      'count':nodes[key]
-                    });
-                } else {
-                    node.children = [{
-                      'name':key,
-                      'root': root,
-                      'conversion': conversion,
-                      'count':nodes[key]
-                    }];
-                }
-             })
-             addNode(graphData);
-          });
+        }).then(function(){
+           /* Add Data to Graph Data */
+           var total = _.values(nodes).reduce(function(a , b){return a + b;});
+
+           _.each(_.keys(nodes), function(key){
+            /*
+            Build a node object with the conversion percentage and other meta data and add it to the children
+            of the parent node
+            */
+            var conversion = Math.floor(nodes[key] / node.count * 100);
+            var root = Math.floor(nodes[key] / graphData.count * 100);
+            if (conversion < 2 ) { return };
+            if (node.children) {
+              node.children.push({
+                'name':key,
+                'root': root,
+                'conversion': conversion,
+                'count':nodes[key]
+              });
+            } else {
+              node.children = [{
+                'name':key,
+                'root': root,
+                'conversion': conversion,
+                'count':nodes[key]
+              }];
+            }
+           })
+           addNode(graphData);
+        });
       }
       $('#run').on('click', function(e){
         var rootEvent = rootEventSelect.MPEventSelect('value')
