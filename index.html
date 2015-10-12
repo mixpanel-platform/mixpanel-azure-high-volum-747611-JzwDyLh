@@ -54,7 +54,14 @@
       var rootEvent;
       var objs = {};
       var graphData = {}
-     
+      
+      var params = {
+        from: moment().subtract(30, 'days'),
+        to: moment(),
+        length: 14,
+        limit: 200,
+        interval: 90
+      }
   
       var width = 960;
       var height = 750;
@@ -244,47 +251,23 @@
           type: 'unique',
           interval: 32,
         };
-      /* Find the Root Event Count */
+        
+        /* Top Event Queries */
+        var topEventsParams = {'limit':'30'};
+        var topEvents = MP.api.topEvents(topEventsParams);
+  
+        /* Funnel Queries */
+        $.when(topEvents).done(function(events){
+             Cache top events 
+            objs = events.values();
+        });
+        /* Find the Root Event Count */
         var rootEventCount = MP.api.segment(rootEvent,rootParams);
         
         $.when(rootEventCount).done(function(eventCount){
             graphData.count = eventCount.sum().values()[rootEvent];
             addNode(graphData);
         });
-      /*
-      rootEventSelect.on('change', function(rootEventObj){
-        rootEvent = rootEventSelect.MPEventSelect('value');
-         This Event Represents the Origin of the User Flow Diagram.
-        graphData = {
-          'name': rootEvent,
-          'id': 1,
-          'conversion': 100,
-          'root': 100
-        };
-  
-         Find the Root Event Count
-        var rootEventCount = MP.api.funnel(rootEvent, rootEvent);
-  
-  
-        $.when(rootEventCount).done(function(eventCount){
-            var eventTotal = 0;
-            _.each(_.values(eventCount[0]), function(count){ eventTotal += count.count});
-            graphData.count = eventTotal;
-            addNode(graphData);
-        });
-  
-        */
-        
-        /* Top Event Queries  
-        var topEventsParams = {'limit':'30'};
-        var topEvents = MP.api.topEvents(topEventsParams);
-  
-         Funnel Queries
-        $.when(topEvents).done(function(events){
-             Cache top events 
-            objs = events.values();
-        });
-        */
       });
     </script>
   </body>
