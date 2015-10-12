@@ -166,6 +166,7 @@
           events.push({'event': event});
           events.reverse();
           events.push(params);
+          debugger
           promises.push(MP.api.funnel.apply(MP.api, events));
         });
         /*
@@ -208,6 +209,7 @@
                   Build a node object with the conversion percentage and other meta data and add it to the children
                   of the parent node
                */
+                debugger
                 var conversion = Math.floor(nodes[key] / node.count * 100);
                 var root = Math.floor(nodes[key] / graphData.count * 100);
                 if (conversion < 2 ) { return };
