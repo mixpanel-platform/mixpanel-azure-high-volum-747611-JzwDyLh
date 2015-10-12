@@ -48,7 +48,7 @@
       <div style="clear: both;"></div>
       <button id="run" value="Run">Run</button>
     <script>
-      var dates = $('#dateSelect').MPDatepicker();
+      var datesSelector = $('#dateSelect').MPDatepicker();
       var rootEventSelect = $('#eventSelect').MPEventSelect();
       /* Global Event List */
       var rootEvent;
@@ -166,7 +166,6 @@
           events.push({'event': event});
           events.reverse();
           events.push(params);
-          debugger
           promises.push(MP.api.funnel.apply(MP.api, events));
         });
         /*
@@ -233,7 +232,8 @@
           });
       }
       $('#run').on('click', function(e){
-        var rootEvent = rootEventSelect.MPEventSelect('value');
+        var rootEvent = rootEventSelect.MPEventSelect('value')
+        var dates = datesSelector.MPDatepicker('value')
         
         params.from = dates.from;
         params.to = dates.to;
