@@ -46,7 +46,7 @@
       <div id="eventSelect" style="float: left;"></div>
       <div id="dateSelect" style="float: right;"></div>
       <div style="clear: both;"></div>
-      <button id="run" value="Run">Run</button>
+      <button id="run" value="Run" style="display: none;">Run</button>
     <script>
       MP.api.MAX_SIMULTANEOUS_QUERIES = 30
       var datesSelector = $('#dateSelect').MPDatepicker();
@@ -169,44 +169,48 @@
           events.push(params);
           promises.push(MP.api.funnel.apply(MP.api, events));
         });
-        Promise.all(promises).then(function(promiseArray){
-          _.each(promiseArray, function(data){
-            total = 0;
-            var length = data.length - 1;
-            _.each(_.values(data[length]), function(funnelObj){ total += funnelObj.count });
-            nodes[_.values(data[length])[0].event] = total;
-          });
-        }).then(function(){
-           /* Add Data to Graph Data */
-           var total = _.values(nodes).reduce(function(a , b){return a + b;});
 
-           _.each(_.keys(nodes), function(key){
-            /*
-            Build a node object with the conversion percentage and other meta data and add it to the children
-            of the parent node
-            */
-            var conversion = Math.floor(nodes[key] / node.count * 100);
-            var root = Math.floor(nodes[key] / graphData.count * 100);
-            if (conversion < 2 ) { return };
-            if (node.children) {
-              node.children.push({
-                'name':key,
-                'root': root,
-                'conversion': conversion,
-                'count':nodes[key]
-              });
-            } else {
-              node.children = [{
-                'name':key,
-                'root': root,
-                'conversion': conversion,
-                'count':nodes[key]
-              }];
-            }
-           })
-           addNode(graphData);
-        });
+          Promise.all(promises).then(function(promiseArray){
+            _.each(promiseArray, function(data){
+                total = 0;
+                var length = data.length - 1;
+                _.each(_.values(data[length]), function(funnelObj){ total += funnelObj.count });
+                nodes[_.values(data[length])[0].event] = total;
+            });
+          }).then(function(){
+             /* Add Data to Graph Data */
+             var total = _.values(nodes).reduce(function(a , b){return a + b;});
+  
+             _.each(_.keys(nodes), function(key){
+               /*
+                  Build a node object with the conversion percentage and other meta data and add it to the children
+                  of the parent node
+               */
+                var conversion = Math.floor(nodes[key] / node.count * 100);
+                var root = Math.floor(nodes[key] / graphData.count * 100);
+                if (conversion < 2 ) { return };
+                if (node.children) {
+                    node.children.push({
+                      'name':key,
+                      'root': root,
+                      'conversion': conversion,
+                      'count':nodes[key]
+                    });
+                } else {
+                    node.children = [{
+                      'name':key,
+                      'root': root,
+                      'conversion': conversion,
+                      'count':nodes[key]
+                    }];
+                }
+             })
+             addNode(graphData);
+          });
       }
+      rootEventSelect.on('change', function(e){
+        $('#run').show();
+      })
       $('#run').on('click', function(e){
         var rootEvent = rootEventSelect.MPEventSelect('value')
         var dates = datesSelector.MPDatepicker('value')
